@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             TextView tv_name = findViewById(R.id.et_name);
             TextView tv_price = findViewById(R.id.et_price);
             TextView tv_output = findViewById(R.id.tv_output);
-            int id = Integer.parseInt(tv_id.getText().toString());
+            String id = tv_id.getText().toString();
             String name = tv_name.getText().toString();
             int price = Integer.parseInt(tv_price.getText().toString());
             new AsyncExportProgress(db,id,name,price,tv_output).execute();
@@ -63,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
     private static class AsyncExportProgress {
 
         AppDatabase db;
-        private int id;
+        private String id;
         private String name;
         private int price;
         TextView output;
 
-        private AsyncExportProgress(AppDatabase db,int id,String name,int price,TextView tv){
+        private AsyncExportProgress(AppDatabase db,String id,String name,int price,TextView tv){
             this.db = db;
             this.id = id;
             this.name = name;

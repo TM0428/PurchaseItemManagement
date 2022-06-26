@@ -14,7 +14,7 @@ public interface ItemDao {
     List<Item> getAll();
 
     @Query("SELECT * FROM item WHERE id IN (:ids)")
-    List<Item> loadAllByIds(int[] ids);
+    List<Item> loadAllByIds(String[] ids);
 
     @Insert
     void insertAll(Item... items);
