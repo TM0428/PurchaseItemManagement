@@ -4,4 +4,6 @@
     <string name="et_name">name</string>
     <string name="bt_submit">submit</string>
     <string name="tv_price">price</string>
+    <string name="tv_author">author</string>
+    <string name="et_price">0</string>
 </resources>

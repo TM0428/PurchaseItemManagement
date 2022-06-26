@@ -1,5 +1,7 @@
 package jp.ac.titech.itpro.sdl.purchaseitemmanagement;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.databinding.ActivityMainBinding;
@@ -8,9 +10,12 @@ import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.AppDatabaseSingleton;
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.Item;
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.ItemDao;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,10 +32,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
         Button bt = findViewById(R.id.bt_submit);
         bt.setOnClickListener(new SubmitButtonClickListener(db));
+        mBinding.fabItemAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MA","item add button clicked");
+                Intent intent = new Intent(getApplication(),PurchaseItemAddActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private class SubmitButtonClickListener implements View.OnClickListener{
