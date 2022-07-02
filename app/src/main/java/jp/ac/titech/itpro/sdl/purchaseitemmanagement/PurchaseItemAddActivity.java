@@ -39,28 +39,33 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             result -> {
                if(result.getResultCode() == Activity.RESULT_OK){
                    if(result.getData() != null){
-                       // 結果を受けとる
-                       try {
-                           BufferedInputStream inputStream = new BufferedInputStream(getContentResolver().openInputStream(result.getData().getData()));
-                           Bitmap image = BitmapFactory.decodeStream(inputStream);
-                           mBinding.ivSampleImage.setImageBitmap(image);
-                           Log.d("PIAA", String.valueOf(image.getHeight()));
-                           // mBinding.ivSampleImage.setMaxHeight(image.getHeight());
-                           mBinding.ivSampleImage.setScaleType(ImageView.ScaleType.FIT_START);
-                       } catch (FileNotFoundException e) {
-                           e.printStackTrace();
-                       }
+                       Log.d("PIAA", String.valueOf(result.getData().getData()));
+                       currentPhotoPath = String.valueOf(result.getData().getData());
+                       photoImage = result.getData().getData();
+                       mBinding.ivSampleImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                       showPhoto();
                    }
                }
             });
 
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    // TODO: You should implement the code that retrieve a bitmap image
+                    //photoImage = (Bitmap) result.getData().getExtras().get("data");
+                    //showPhoto();
+
+                    mBinding.ivSampleImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    showPhoto();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = ActivityPurchaseItemAddBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
-        mBinding.btCamera.setOnClickListener(v -> {
+        mBinding.btSelimg.setOnClickListener(v -> {
             /*
             try {
                 Log.d("TM","photo button push");
@@ -85,9 +90,41 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             intent.setAction(Intent.ACTION_GET_CONTENT);
             activityResultLauncher.launch(intent);
         });
+        mBinding.btCamera.setOnClickListener(v -> {
+            try {
+                Log.d("TM","photo button push");
+                File file = createImageFile();
+                photoImage = FileProvider.getUriForFile(
+                        PurchaseItemAddActivity.this,
+                        getApplicationContext().getPackageName() + ".fileprovider",
+                        file
+                );
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // TODO: You should setup appropriate parameters for the intent
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoImage);
+
+                PackageManager manager = getPackageManager();
+                @SuppressLint("QueryPermissionsNeeded")
+                List<ResolveInfo> activities = manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                if (!activities.isEmpty()) {
+                    Log.d("TM","photo button push");
+                    launcher.launch(intent);
+                } else {
+                    Toast.makeText(PurchaseItemAddActivity.this, R.string.toast_no_activities, Toast.LENGTH_LONG).show();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-
+    private void showPhoto() {
+        if (photoImage == null) {
+            return;
+        }
+        mBinding.ivSampleImage.setImageURI(photoImage);
+    }
 
     private File createImageFile() throws IOException {
         // Create an image file name
