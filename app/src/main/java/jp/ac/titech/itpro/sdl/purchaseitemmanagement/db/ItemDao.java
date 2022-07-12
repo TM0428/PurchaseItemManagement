@@ -16,6 +16,9 @@ public interface ItemDao {
     @Query("SELECT * FROM item WHERE id IN (:ids)")
     List<Item> loadAllByIds(String[] ids);
 
+    @Query("SELECT * FROM item WHERE name LIKE :query")
+    List<Item> findItemByName(String query);
+
     @Insert
     void insertAll(Item... items);
 

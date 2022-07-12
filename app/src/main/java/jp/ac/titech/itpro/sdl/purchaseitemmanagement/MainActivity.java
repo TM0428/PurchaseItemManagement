@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             this.db = db;
         }
     }
+
     private static class AsyncExportProgress {
 
         AppDatabase db;

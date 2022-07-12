@@ -14,10 +14,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -27,8 +32,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.databinding.ActivityPurchaseItemAddBinding;
+import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.AppDatabase;
+import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.AppDatabaseSingleton;
+import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.Item;
+import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.ItemDao;
 
 public class PurchaseItemAddActivity extends AppCompatActivity {
     private Uri photoImage = null;
@@ -51,7 +63,6 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    // TODO: You should implement the code that retrieve a bitmap image
                     //photoImage = (Bitmap) result.getData().getExtras().get("data");
                     //showPhoto();
 
@@ -65,6 +76,7 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mBinding = ActivityPurchaseItemAddBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
         mBinding.btSelimg.setOnClickListener(v -> {
             /*
             try {
@@ -100,7 +112,6 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
                         file
                 );
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                // TODO: You should setup appropriate parameters for the intent
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoImage);
 
                 PackageManager manager = getPackageManager();
@@ -115,6 +126,17 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        });
+        mBinding.btSubmit.setOnClickListener(new View.OnClickListener() {
+            // private AppDatabase db;
+            @Override
+            public void onClick(View v) {
+                AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
+                String name = mBinding.etAddName.getText().toString();
+                int price = Integer.parseInt(mBinding.etAddPrice.getText().toString());
+                String id = createId();
+                new AsyncExportProgress(db,id,name,price).execute();
             }
         });
     }
@@ -141,7 +163,70 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
+    private String createId(){
+        return new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    }
 
 
+
+    private static class AsyncExportProgress {
+        AppDatabase db;
+        private String id;
+        private String name;
+        private int price;
+        private String path;
+
+        private AsyncExportProgress(AppDatabase db,String id,String name,int price){
+            this.db = db;
+            this.id = id;
+            this.name = name;
+            this.price = price;
+        }
+
+
+        private class AsyncRunnable implements Runnable {
+
+            private String strResult;
+
+            Handler handler = new Handler(Looper.getMainLooper());
+            @Override
+            public void run() {
+                // ここにバックグラウンド処理を書く
+                ItemDao dao = db.itemDao();
+                dao.insert(new Item(id,name,price));
+                List<Item> items = dao.getAll();
+                StringBuilder sb = new StringBuilder();
+                items.forEach(item -> {
+                    Log.d("PIAA",item.name);
+                    sb.append("id:" +item.id + ",name:" + item.name + ",price:" + item.price + "\n" );
+
+                });
+                strResult = sb.toString();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onPostExecute(strResult);
+                    }
+                });
+            }
+        }
+
+        void onPreExecute() {
+            // ここに前処理を記述します
+            // 例） プログレスダイアログ表示
+        }
+
+        void execute() {
+            onPreExecute();
+            ExecutorService executorService  = Executors.newSingleThreadExecutor();
+            executorService.submit(new AsyncRunnable());
+        }
+
+        void onPostExecute(String result) {
+            // バックグランド処理終了後の処理をここに記述します
+            // 例） プログレスダイアログ終了
+            Log.d("PIAA",result);
+        }
+    }
 
 }
