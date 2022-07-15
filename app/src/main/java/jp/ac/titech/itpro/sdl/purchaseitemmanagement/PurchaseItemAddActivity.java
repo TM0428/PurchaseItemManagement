@@ -136,7 +136,7 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
                 String name = mBinding.etAddName.getText().toString();
                 int price = Integer.parseInt(mBinding.etAddPrice.getText().toString());
                 String id = createId();
-                new AsyncExportProgress(db,id,name,price).execute();
+                new AsyncExportProgress(db,id,name,price,photoImage.toString()).execute();
             }
         });
     }
@@ -169,43 +169,39 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
 
 
 
-    private static class AsyncExportProgress {
+    private class AsyncExportProgress {
         AppDatabase db;
         private String id;
         private String name;
         private int price;
-        private String path;
+        private String path = "";
 
-        private AsyncExportProgress(AppDatabase db,String id,String name,int price){
+        private AsyncExportProgress(AppDatabase db,String id,String name,int price, String path){
             this.db = db;
             this.id = id;
             this.name = name;
             this.price = price;
+            this.path = path;
         }
 
 
         private class AsyncRunnable implements Runnable {
-
-            private String strResult;
 
             Handler handler = new Handler(Looper.getMainLooper());
             @Override
             public void run() {
                 // ここにバックグラウンド処理を書く
                 ItemDao dao = db.itemDao();
-                dao.insert(new Item(id,name,price));
+                dao.insert(new Item(id,name,price,path));
                 List<Item> items = dao.getAll();
-                StringBuilder sb = new StringBuilder();
                 items.forEach(item -> {
                     Log.d("PIAA",item.name);
-                    sb.append("id:" +item.id + ",name:" + item.name + ",price:" + item.price + "\n" );
 
                 });
-                strResult = sb.toString();
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        onPostExecute(strResult);
+                        onPostExecute();
                     }
                 });
             }
@@ -222,10 +218,12 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             executorService.submit(new AsyncRunnable());
         }
 
-        void onPostExecute(String result) {
+        void onPostExecute() {
             // バックグランド処理終了後の処理をここに記述します
             // 例） プログレスダイアログ終了
-            Log.d("PIAA",result);
+            Log.d("PIAA","DB item add.");
+            setResult(RESULT_OK);
+            finish();
         }
     }
 

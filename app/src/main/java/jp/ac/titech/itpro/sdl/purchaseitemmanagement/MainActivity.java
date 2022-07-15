@@ -1,6 +1,11 @@
 package jp.ac.titech.itpro.sdl.purchaseitemmanagement;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.databinding.ActivityMainBinding;
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.AppDatabase;
@@ -8,15 +13,18 @@ import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.AppDatabaseSingleton;
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.Item;
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.ItemDao;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,66 +32,77 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding mBinding;
+    // TODO: Customize parameter argument names
+    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_SEARCH_WORLD = "search_word";
+    // TODO: Customize parameters
+    private int mColumnCount = 2;
+    public List<Item> items = new ArrayList<>();
+    private AppDatabase db;
+    private ItemRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
-        AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
-        Button bt = findViewById(R.id.bt_submit_test);
-        bt.setOnClickListener(new SubmitButtonClickListener(db));
+        db = AppDatabaseSingleton.getInstance(getApplicationContext());
         mBinding.fabItemAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("MA","item add button clicked");
                 Intent intent = new Intent(getApplication(),PurchaseItemAddActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,114514);
             }
         });
+        new AsyncExportProgress(db,mBinding.tvOutput).execute();
+
+        if (mColumnCount <= 1) {
+            mBinding.rvItemlist.setLayoutManager(new LinearLayoutManager(this));
+        } else {
+            mBinding.rvItemlist.setLayoutManager(new GridLayoutManager(this, mColumnCount));
+        }
+        if(this.items.size() == 0){
+            adapter = new ItemRecyclerViewAdapter(this.items);
+        }
+        else{
+            adapter = new ItemRecyclerViewAdapter(this.items){
+                // クリック時、サークル詳細ページに飛べるように変更
+                @Override
+                void onItemClick(View view, int position, Item itemData) {
+                    // TODO: アイテム詳細ページへ遷移
+                }
+            };
+        }
+        mBinding.rvItemlist.setAdapter(adapter);
     }
 
-    private class SubmitButtonClickListener implements View.OnClickListener{
-        private AppDatabase db;
-        @Override
-        public void onClick(View view){
-            Log.d("debug","button touched");
-            /*
-            ItemDao dao = db.itemDao();
-            dao.insert(new Item(1,"hogehoge",500));
-            //ItemDao dao = db.itemDao();
-            List<Item> items = dao.getAll();
-            items.forEach(item -> {
-                Log.d("debug",item.name);
-            });
-             */
-            TextView tv_id = findViewById(R.id.et_ID);
-            TextView tv_name = findViewById(R.id.et_name);
-            TextView tv_price = findViewById(R.id.et_price);
-            TextView tv_output = findViewById(R.id.tv_output);
-            String id = tv_id.getText().toString();
-            String name = tv_name.getText().toString();
-            int price = Integer.parseInt(tv_price.getText().toString());
-            new AsyncExportProgress(db,id,name,price,tv_output).execute();
-        }
-        private SubmitButtonClickListener(AppDatabase db){
-            this.db = db;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            Log.d("MA","Activity Returened.");
+            new AsyncExportProgress(db,mBinding.tvOutput).execute();
         }
     }
 
-    private static class AsyncExportProgress {
+    public void setItem(List<Item> items){
+        items.forEach(item -> {
+            Log.d("MA_items", String.valueOf(item.price));
+        });
+        this.items.clear();
+        this.items.addAll(items);
+        adapter.notifyDataSetChanged();
+    }
+
+
+    private class AsyncExportProgress {
 
         AppDatabase db;
-        private String id;
-        private String name;
-        private int price;
         TextView output;
 
-        private AsyncExportProgress(AppDatabase db,String id,String name,int price,TextView tv){
+        private AsyncExportProgress(AppDatabase db,TextView tv){
             this.db = db;
-            this.id = id;
-            this.name = name;
-            this.price = price;
             this.output = tv;
         }
 
@@ -97,11 +116,10 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // ここにバックグラウンド処理を書く
                 ItemDao dao = db.itemDao();
-                dao.insert(new Item(id,name,price));
-                List<Item> items = dao.getAll();
+                List<Item> items_db = dao.getAll();
                 StringBuilder sb = new StringBuilder();
-                items.forEach(item -> {
-                    Log.d("debug",item.name);
+                items_db.forEach(item -> {
+                    Log.d("MA_DB",item.name);
                     sb.append("id:" +item.id + ",name:" + item.name + ",price:" + item.price + "\n" );
 
                 });
@@ -109,9 +127,10 @@ public class MainActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        onPostExecute(strResult);
+                        onPostExecute(strResult,items_db);
                     }
                 });
+
             }
         }
 
@@ -126,10 +145,11 @@ public class MainActivity extends AppCompatActivity {
             executorService.submit(new AsyncRunnable());
         }
 
-        void onPostExecute(String result) {
+        void onPostExecute(String result, List<Item> items) {
             // バックグランド処理終了後の処理をここに記述します
             // 例） プログレスダイアログ終了
             output.setText(result);
+            setItem(items);
         }
     }
 
