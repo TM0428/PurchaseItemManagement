@@ -47,13 +47,22 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
     private String currentPhotoPath;
     private ActivityPurchaseItemAddBinding mBinding;
 
+    @SuppressLint("WrongConstant")
     private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
                if(result.getResultCode() == Activity.RESULT_OK){
                    if(result.getData() != null){
                        Log.d("PIAA", String.valueOf(result.getData().getData()));
                        currentPhotoPath = String.valueOf(result.getData().getData());
+                       final int takeFlags = result.getData().getFlags()& (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                               | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                        photoImage = result.getData().getData();
+                       try {
+                           getContentResolver().takePersistableUriPermission(photoImage, takeFlags);
+                       }
+                       catch (SecurityException e){
+                           e.printStackTrace();
+                       }
                        mBinding.ivSampleImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
                        showPhoto();
                    }
@@ -99,7 +108,7 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
              */
             Intent intent = new Intent();
             intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
             activityResultLauncher.launch(intent);
         });
         mBinding.btCamera.setOnClickListener(v -> {
@@ -132,11 +141,13 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             // private AppDatabase db;
             @Override
             public void onClick(View v) {
+                //getContentResolver().takePersistableUriPermission(photoImage,Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
                 String name = mBinding.etAddName.getText().toString();
                 int price = Integer.parseInt(mBinding.etAddPrice.getText().toString());
+                String author = mBinding.etAddAuthor.getText().toString();
                 String id = createId();
-                new AsyncExportProgress(db,id,name,price,photoImage.toString()).execute();
+                new AsyncExportProgress(db,id,name,price,author,photoImage.toString()).execute();
             }
         });
     }
@@ -174,13 +185,15 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
         private String id;
         private String name;
         private int price;
+        private String author;
         private String path = "";
 
-        private AsyncExportProgress(AppDatabase db,String id,String name,int price, String path){
+        private AsyncExportProgress(AppDatabase db,String id,String name,int price,String author, String path){
             this.db = db;
             this.id = id;
             this.name = name;
             this.price = price;
+            this.author = author;
             this.path = path;
         }
 
@@ -192,7 +205,7 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             public void run() {
                 // ここにバックグラウンド処理を書く
                 ItemDao dao = db.itemDao();
-                dao.insert(new Item(id,name,price,path));
+                dao.insert(new Item(id,name,price,author,path));
                 List<Item> items = dao.getAll();
                 items.forEach(item -> {
                     Log.d("PIAA",item.name);

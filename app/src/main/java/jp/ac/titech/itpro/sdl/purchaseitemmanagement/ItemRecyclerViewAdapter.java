@@ -43,18 +43,23 @@ public class ItemRecyclerViewAdapter extends RecyclerView.Adapter<ItemRecyclerVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("RV", "item clicked");
                 int position = holder.getAdapterPosition();
                 onItemClick(view,position,items.get(position));
             }
         });
         Log.d("RV",items.get(position).path);
-        holder.mThumView.setImageURI(Uri.parse(items.get(position).path));
+        if(items.get(position).path != ""){
+            holder.mThumView.setImageURI(Uri.parse(items.get(position).path));
+        }
     }
 
     @Override
     public int getItemCount() {
         return items.size();
     }
+
+
 
     /**
      * if you want to make a method(click), you override here.
