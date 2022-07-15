@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.ac.titech.itpro.sdl.purchaseitemmanagement">
-    <uses-feature android:name="android.hardware.camera"
+
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
+
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -19,6 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PurchaseItemManagement">
         <activity
+            android:name=".ItemInfoActivity"
+            android:exported="false" />
+        <activity
             android:name=".PurchaseItemAddActivity"
             android:exported="false" />
         <activity
@@ -30,6 +38,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="jp.ac.titech.itpro.sdl.purchaseitemmanagement.fileprovider"
@@ -37,7 +46,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_path"></meta-data>
+                android:resource="@xml/provider_path" />
         </provider>
     </application>
 
