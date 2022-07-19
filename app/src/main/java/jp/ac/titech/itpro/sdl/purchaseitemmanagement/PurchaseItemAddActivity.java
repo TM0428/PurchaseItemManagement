@@ -146,8 +146,8 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
                 String name = mBinding.etAddName.getText().toString();
                 int price = Integer.parseInt(mBinding.etAddPrice.getText().toString());
                 String author = mBinding.etAddAuthor.getText().toString();
-                String id = createId();
-                new AsyncExportProgress(db,id,name,price,author,photoImage.toString()).execute();
+                // String id = createId();
+                new AsyncExportProgress(db,0,name,price,author,photoImage.toString()).execute();
             }
         });
     }
@@ -182,13 +182,13 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
 
     private class AsyncExportProgress {
         AppDatabase db;
-        private String id;
+        private int id;
         private String name;
         private int price;
         private String author;
         private String path = "";
 
-        private AsyncExportProgress(AppDatabase db,String id,String name,int price,String author, String path){
+        private AsyncExportProgress(AppDatabase db,int id,String name,int price,String author, String path){
             this.db = db;
             this.id = id;
             this.name = name;

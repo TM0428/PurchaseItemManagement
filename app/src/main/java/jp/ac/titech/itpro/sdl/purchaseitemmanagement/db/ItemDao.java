@@ -14,10 +14,10 @@ public interface ItemDao {
     List<Item> getAll();
 
     @Query("SELECT * FROM item WHERE id LIKE (:id)")
-    List<Item> getById(String id);
+    List<Item> getById(int id);
 
     @Query("SELECT * FROM item WHERE id IN (:ids)")
-    List<Item> loadAllByIds(String[] ids);
+    List<Item> loadAllByIds(int[] ids);
 
     @Query("SELECT * FROM item WHERE name LIKE '%' || :query || '%'")
     List<Item> findItemByName(String query);

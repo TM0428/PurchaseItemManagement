@@ -2,13 +2,15 @@ package jp.ac.titech.itpro.sdl.purchaseitemmanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.net.Uri;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +24,7 @@ import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.ItemDao;
 
 public class ItemInfoActivity extends AppCompatActivity {
     private static final String ARG_PARAM1 = "ID";
-    private String id;
+    private int id;
 
     private ActivityItemInfoBinding mBinding;
 
@@ -32,28 +34,37 @@ public class ItemInfoActivity extends AppCompatActivity {
         mBinding = ActivityItemInfoBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
-        id = getIntent().getStringExtra(ARG_PARAM1);
-        new AsyncExportProgress(db, id, mBinding.ivIteminfoimage, mBinding.tvIteminfoName, mBinding.tvIteminfoPrice, mBinding.tvIteminfoAuthor).execute();
+        id = Integer.parseInt(getIntent().getStringExtra(ARG_PARAM1));
+        new AsyncExportProgress(db, id, mBinding.ivIteminfoimage, mBinding.tvIteminfoName, mBinding.tvIteminfoPrice, mBinding.tvIteminfoAuthor, this).execute();
     }
 
+    public void setData(Item item){
+        mBinding.tvIteminfoName.setText(item.name);
+        mBinding.tvIteminfoAuthor.setText(item.author + "作");
+        mBinding.tvIteminfoPrice.setText(String.valueOf(item.price) + "円");
+        Glide.with(this).load(item.path).into(mBinding.ivIteminfoimage);
+        Log.d("IIA","Data set");
+    }
 
-    private static class AsyncExportProgress {
+    private class AsyncExportProgress {
 
         AppDatabase db;
-        String id;
+        int id;
         ImageView iv;
         TextView name;
         TextView price;
         TextView author;
         Item item;
+        private Context context;
 
-        private AsyncExportProgress(AppDatabase db, String id, ImageView iv, TextView name, TextView price, TextView author){
+        private AsyncExportProgress(AppDatabase db, int id, ImageView iv, TextView name, TextView price, TextView author, Context context){
             this.db = db;
             this.id = id;
             this.iv = iv;
             this.name = name;
             this.price = price;
             this.author = author;
+            this.context = context;
         }
 
 
@@ -67,11 +78,11 @@ public class ItemInfoActivity extends AppCompatActivity {
                 List<Item> items = dao.getById(id);
                 item = items.get(0);
                 Log.d("IIA",item.toString());
-                iv.setImageURI(Uri.parse(item.path));
-                name.setText(item.name);
-                price.setText(String.valueOf(item.price) + "円");
-                author.setText(item.author + "作");
-                handler.post(() -> onPostExecute());
+                //iv.setImageURI(Uri.parse(item.path));
+                //name.setText(item.name);
+                //price.setText(String.valueOf(item.price) + "円");
+                //author.setText(item.author + "作");
+                handler.post(() -> onPostExecute(item));
 
             }
         }
@@ -80,7 +91,7 @@ public class ItemInfoActivity extends AppCompatActivity {
             // ここに前処理を記述します
             // 例） プログレスダイアログ表示
             Log.d("IIA","item get by DB");
-            Log.d("IIA",id);
+            Log.d("IIA",String.valueOf(id));
         }
 
         void execute() {
@@ -89,9 +100,11 @@ public class ItemInfoActivity extends AppCompatActivity {
             executorService.submit(new AsyncRunnable());
         }
 
-        void onPostExecute() {
+        void onPostExecute(Item item) {
             // バックグランド処理終了後の処理をここに記述します
             // 例） プログレスダイアログ終了
+            Log.d("IIA","DB exit.");
+            setData(item);
         }
     }
 }

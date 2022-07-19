@@ -8,9 +8,9 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class Item {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
-    public String id;
+    public int id;
 
     @ColumnInfo(name = "name")
     public String name;
@@ -24,14 +24,14 @@ public class Item {
     @ColumnInfo(name = "ImagePath")
     public String path = "";
 
-    public Item(String id,String name,int price,String author){
+    public Item(int id,String name,int price,String author){
         this.id = id;
         this.name = name;
         this.price = price;
         this.author = author;
     }
     @Ignore
-    public Item(String id,String name,int price,String author, String path){
+    public Item(int id,String name,int price,String author, String path){
         this.id = id;
         this.name = name;
         this.price = price;

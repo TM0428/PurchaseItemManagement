@@ -1,6 +1,11 @@
 package jp.ac.titech.itpro.sdl.purchaseitemmanagement;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +16,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.Item;
@@ -18,9 +25,10 @@ import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.Item;
 public class ItemRecyclerViewAdapter extends RecyclerView.Adapter<ItemRecyclerViewAdapter.ViewHolder> {
 
     private List<Item> items;
+    private Context context;
 
-    public ItemRecyclerViewAdapter(List<Item> items) {
-        this.items = items;
+    public ItemRecyclerViewAdapter(List<Item> items, Context context) {
+        this.items = items; this.context = context;
     }
 
     public void setItem(List<Item> items){
@@ -50,7 +58,9 @@ public class ItemRecyclerViewAdapter extends RecyclerView.Adapter<ItemRecyclerVi
         });
         Log.d("RV",items.get(position).path);
         if(items.get(position).path != ""){
-            holder.mThumView.setImageURI(Uri.parse(items.get(position).path));
+
+            // holder.mThumView.setImageURI(Uri.parse(items.get(position).path));
+            Glide.with(context).load(items.get(position).path).into(holder.mThumView);
         }
     }
 

@@ -61,14 +61,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mBinding.rvItemlist.setLayoutManager(new GridLayoutManager(this, mColumnCount));
         }
-        adapter = new ItemRecyclerViewAdapter(this.items){
+        adapter = new ItemRecyclerViewAdapter(this.items, this){
             // クリック時、サークル詳細ページに飛べるように変更
             @Override
             void onItemClick(View view, int position, Item itemData) {
                 // TODO: アイテム詳細ページへ遷移
                 Log.d("MA","item clicked");
                 Intent intent = new Intent(getApplication(), ItemInfoActivity.class);
-                intent.putExtra(ARG_PARAM1, itemData.id);
+                intent.putExtra(ARG_PARAM1, String.valueOf(itemData.id));
                 startActivity(intent);
             }
         };
