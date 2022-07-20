@@ -21,10 +21,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <ImageView
+                <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
                     android:id="@+id/iv_iteminfoimage"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="400dp"
                     android:adjustViewBounds="true"
                     android:padding="10dp"
                     app:srcCompat="@drawable/ic_launcher_foreground" />

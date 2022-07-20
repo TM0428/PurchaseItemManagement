@@ -1,5 +1,6 @@
 package jp.ac.titech.itpro.sdl.purchaseitemmanagement;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -7,10 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -36,13 +40,30 @@ public class ItemInfoActivity extends AppCompatActivity {
         AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
         id = Integer.parseInt(getIntent().getStringExtra(ARG_PARAM1));
         new AsyncExportProgress(db, id, mBinding.ivIteminfoimage, mBinding.tvIteminfoName, mBinding.tvIteminfoPrice, mBinding.tvIteminfoAuthor, this).execute();
+
     }
+
 
     public void setData(Item item){
         mBinding.tvIteminfoName.setText(item.name);
         mBinding.tvIteminfoAuthor.setText(item.tag);
         mBinding.tvIteminfoPrice.setText(String.valueOf(item.price) + "円");
-        Glide.with(this).load(item.path).into(mBinding.ivIteminfoimage);
+        // Glide.with(this).load(item.path).into(mBinding.ivIteminfoimage);
+        mBinding.ivIteminfoimage.setImage(ImageSource.uri(item.path));
+        /*
+        mBinding.ivIteminfoimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SubsamplingScaleImageView imageViewEnlarged = new SubsamplingScaleImageView(getApplicationContext());
+                imageViewEnlarged.setImage(ImageSource.uri(item.path));
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                builder.setView(imageViewEnlarged);
+                builder.setNegativeButton("close", null);
+                builder.show();
+            }
+        });
+
+         */
         Log.d("IIA","Data set");
     }
 
@@ -50,14 +71,14 @@ public class ItemInfoActivity extends AppCompatActivity {
 
         AppDatabase db;
         int id;
-        ImageView iv;
+        SubsamplingScaleImageView iv;
         TextView name;
         TextView price;
         TextView author;
         Item item;
         private Context context;
 
-        private AsyncExportProgress(AppDatabase db, int id, ImageView iv, TextView name, TextView price, TextView author, Context context){
+        private AsyncExportProgress(AppDatabase db, int id, SubsamplingScaleImageView iv, TextView name, TextView price, TextView author, Context context){
             this.db = db;
             this.id = id;
             this.iv = iv;

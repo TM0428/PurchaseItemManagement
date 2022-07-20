@@ -22,6 +22,9 @@ public interface ItemDao {
     @Query("SELECT * FROM item WHERE name LIKE '%' || :query || '%'")
     List<Item> findItemByName(String query);
 
+    @Query("SELECT * FROM item WHERE tag LIKE '%' || :query || '%'")
+    List<Item> findItemByTag(String query);
+
     @Insert
     void insertAll(Item... items);
 
