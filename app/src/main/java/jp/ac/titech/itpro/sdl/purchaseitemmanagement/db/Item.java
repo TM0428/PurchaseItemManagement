@@ -18,25 +18,25 @@ public class Item {
     @ColumnInfo(name = "price")
     public int price;
 
-    @ColumnInfo(name = "author")
-    public String author;
+    @ColumnInfo(name = "tag")
+    public String tag;
 
     @ColumnInfo(name = "ImagePath")
     public String path = "";
 
-    public Item(int id,String name,int price,String author){
+    public Item(int id,String name,int price,String tag){
         this.id = id;
         this.name = name;
         this.price = price;
-        this.author = author;
+        this.tag = tag;
     }
     @Ignore
-    public Item(int id,String name,int price,String author, String path){
+    public Item(int id,String name,int price,String tag, String path){
         this.id = id;
         this.name = name;
         this.price = price;
         this.path = path;
-        this.author = author;
+        this.tag = tag;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Item {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", author='" + author + '\'' +
+                ", tag='" + tag + '\'' +
                 ", path='" + path + '\'' +
                 '}';
     }

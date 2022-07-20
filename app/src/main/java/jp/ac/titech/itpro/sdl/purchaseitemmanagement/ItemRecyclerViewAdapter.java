@@ -47,7 +47,8 @@ public class ItemRecyclerViewAdapter extends RecyclerView.Adapter<ItemRecyclerVi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.mitem = items.get(position);
         holder.mNameView.setText(items.get(position).name);
-        holder.mPriceView.setText(String.valueOf(items.get(position).price) + "円");
+        holder.mTagView.setText(items.get(position).tag);
+        holder.mPriceView.setText(String.valueOf("￥" + items.get(position).price));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,6 +85,7 @@ public class ItemRecyclerViewAdapter extends RecyclerView.Adapter<ItemRecyclerVi
         public final View mView;
         public final TextView mNameView;
         public final TextView mPriceView;
+        public final TextView mTagView;
         public final ImageView mThumView;
         public Item mitem;
 
@@ -92,6 +94,7 @@ public class ItemRecyclerViewAdapter extends RecyclerView.Adapter<ItemRecyclerVi
             mView = view;
             mNameView = (TextView) view.findViewById(R.id.tv_itemname);
             mPriceView = (TextView) view.findViewById(R.id.tv_itemprice);
+            mTagView = (TextView) view.findViewById(R.id.tv_itemtag);
             mThumView = (ImageView) view.findViewById(R.id.iv_thumbnail);
         }
     }

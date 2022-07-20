@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // ここにバックグラウンド処理を書く
                 ItemDao dao = db.itemDao();
+                Log.d("MA_DB","DB access");
                 List<Item> items_db = dao.getAll();
                 StringBuilder sb = new StringBuilder();
                 items_db.forEach(item -> {
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
             // バックグランド処理終了後の処理をここに記述します
             // 例） プログレスダイアログ終了
             // output.setText(result);
+            Log.d("MA_DB","DB access end");
             setItem(items);
         }
     }

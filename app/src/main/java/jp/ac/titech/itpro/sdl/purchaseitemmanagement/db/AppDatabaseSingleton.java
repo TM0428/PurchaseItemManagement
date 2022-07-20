@@ -7,6 +7,7 @@ import androidx.room.Room;
 public class AppDatabaseSingleton {
     private static AppDatabase instance = null;
     public static AppDatabase getInstance(Context context){
+
         if(instance != null){
             return instance;
         }

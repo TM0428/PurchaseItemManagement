@@ -40,7 +40,7 @@ public class ItemInfoActivity extends AppCompatActivity {
 
     public void setData(Item item){
         mBinding.tvIteminfoName.setText(item.name);
-        mBinding.tvIteminfoAuthor.setText(item.author + "作");
+        mBinding.tvIteminfoAuthor.setText(item.tag);
         mBinding.tvIteminfoPrice.setText(String.valueOf(item.price) + "円");
         Glide.with(this).load(item.path).into(mBinding.ivIteminfoimage);
         Log.d("IIA","Data set");

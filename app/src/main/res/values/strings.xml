@@ -3,9 +3,10 @@
     <string name="et_id">Id</string>
     <string name="et_name">アイテム名</string>
     <string name="hint_name">商品名を入力してください。</string>
+    <string name="hint_tag">書籍</string>
     <string name="bt_submit">データを登録</string>
     <string name="tv_price">価格</string>
-    <string name="tv_author">作者</string>
+    <string name="tv_author">tag</string>
     <string name="et_price">0</string>
     <string name="bt_camera">カメラを起動</string>
     <string name="bt_selimg">画像を選択</string>

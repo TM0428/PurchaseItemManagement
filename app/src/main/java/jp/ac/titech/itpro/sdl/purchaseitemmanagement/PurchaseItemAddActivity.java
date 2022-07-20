@@ -127,7 +127,7 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
                 @SuppressLint("QueryPermissionsNeeded")
                 List<ResolveInfo> activities = manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
                 if (!activities.isEmpty()) {
-                    Log.d("TM","photo button push");
+                    Log.d("PIAA","photo button push");
                     launcher.launch(intent);
                 } else {
                     Toast.makeText(PurchaseItemAddActivity.this, R.string.toast_no_activities, Toast.LENGTH_LONG).show();
@@ -142,12 +142,13 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //getContentResolver().takePersistableUriPermission(photoImage,Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                Log.d("PIAA","item add button push");
                 AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
                 String name = mBinding.etAddName.getText().toString();
                 int price = Integer.parseInt(mBinding.etAddPrice.getText().toString());
-                String author = mBinding.etAddAuthor.getText().toString();
+                String tag = mBinding.etAddTag.getText().toString();
                 // String id = createId();
-                new AsyncExportProgress(db,0,name,price,author,photoImage.toString()).execute();
+                new AsyncExportProgress(db,0,name,price,tag,photoImage.toString()).execute();
             }
         });
     }
@@ -174,9 +175,13 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
+
+    /*
     private String createId(){
         return new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     }
+
+     */
 
 
 
@@ -185,15 +190,15 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
         private int id;
         private String name;
         private int price;
-        private String author;
+        private String tag;
         private String path = "";
 
-        private AsyncExportProgress(AppDatabase db,int id,String name,int price,String author, String path){
+        private AsyncExportProgress(AppDatabase db,int id,String name,int price,String tag, String path){
             this.db = db;
             this.id = id;
             this.name = name;
             this.price = price;
-            this.author = author;
+            this.tag = tag;
             this.path = path;
         }
 
@@ -205,8 +210,10 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             public void run() {
                 // ここにバックグラウンド処理を書く
                 ItemDao dao = db.itemDao();
-                dao.insert(new Item(id,name,price,author,path));
+                dao.insert(new Item(id,name,price,tag,path));
+                Log.d("PIAA","DB access.");
                 List<Item> items = dao.getAll();
+                Log.d("PIAA",String.valueOf(items.size()));
                 items.forEach(item -> {
                     Log.d("PIAA",item.name);
 
