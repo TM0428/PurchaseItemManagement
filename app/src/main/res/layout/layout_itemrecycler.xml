@@ -46,16 +46,20 @@
                     android:id="@+id/tv_itemtag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
                     android:layout_gravity="left"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textSize="16sp"
-                    tools:text="ライトノベル" />
+                    tools:text="ライトノベルaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
 
                 <TextView
                     android:id="@+id/tv_itemprice"
-                    android:layout_width="fill_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:gravity="right"
+                    android:maxLines="1"
                     android:textSize="16sp"
                     tools:text="￥500" />
             </LinearLayout>

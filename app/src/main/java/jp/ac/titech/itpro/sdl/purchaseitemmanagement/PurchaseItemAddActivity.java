@@ -210,8 +210,11 @@ public class PurchaseItemAddActivity extends AppCompatActivity {
             public void run() {
                 // ここにバックグラウンド処理を書く
                 ItemDao dao = db.itemDao();
-                dao.insert(new Item(id,name,price,tag,path));
                 Log.d("PIAA","DB access.");
+                Item tmp = new Item(id,name,price,tag,path);
+                Log.d("PIAA",tmp.toString());
+
+                dao.insert(new Item(id,name,price,tag,path));
                 List<Item> items = dao.getAll();
                 Log.d("PIAA",String.valueOf(items.size()));
                 items.forEach(item -> {

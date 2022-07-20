@@ -33,6 +33,7 @@
                     android:id="@+id/tv_iteminfo_author"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
                     android:text="TextView"
                     android:textSize="20sp"
                     tools:text="ライトノベル" />
@@ -43,6 +44,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center_horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:text="TextView"
                     android:textSize="34sp"
                     tools:text="キーホルダー" />

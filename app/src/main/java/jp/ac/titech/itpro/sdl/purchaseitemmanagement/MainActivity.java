@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.SearchView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -144,15 +145,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // ここにバックグラウンド処理を書く
-                ItemDao dao = db.itemDao();
                 Log.d("MA_DB","DB access");
+                ItemDao dao = db.itemDao();
                 List<Item> items_db = dao.getAll();
+                Log.d("MA_DB",String.valueOf(items_db.size()));
                 StringBuilder sb = new StringBuilder();
                 items_db.forEach(item -> {
                     Log.d("MA_DB",item.name);
                     sb.append(item.toString());
 
                 });
+                items_db.sort(Comparator.comparing(Item::getName));
                 strResult = sb.toString();
                 handler.post(new Runnable() {
                     @Override
@@ -218,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                 strResult = sb.toString();
 
                  */
+                items_db.sort(Comparator.comparing(Item::getName));
                 handler.post(new Runnable() {
                     @Override
                     public void run() {

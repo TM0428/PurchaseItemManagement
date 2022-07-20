@@ -125,7 +125,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
-                    android:contentDescription="@string/iv_sample" />
+                    android:contentDescription="@string/iv_sample"
+                    android:padding="10dp" />
 
                 <Button
                     android:id="@+id/bt_submit"

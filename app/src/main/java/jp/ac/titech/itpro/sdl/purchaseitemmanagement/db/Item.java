@@ -49,4 +49,6 @@ public class Item {
                 ", path='" + path + '\'' +
                 '}';
     }
+
+    public String getName(){ return name; }
 }
