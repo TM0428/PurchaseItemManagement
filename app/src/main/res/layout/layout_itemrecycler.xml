@@ -12,7 +12,7 @@
         app:cardCornerRadius="6dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
-        app:contentPadding="8dp">
+        app:contentPadding="6dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,12 +46,12 @@
                     android:id="@+id/tv_itemtag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
                     android:layout_gravity="left"
+                    android:layout_weight="0.8"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textSize="16sp"
-                    tools:text="ライトノベルaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+                    tools:text="ライトノベル" />
 
                 <TextView
                     android:id="@+id/tv_itemprice"
