@@ -23,7 +23,7 @@ public interface ItemDao {
     List<Item> findItemByName(String query, int phigh);
 
 
-    @Query("SELECT * FROM item WHERE name LIKE '%' || :query || '%' OR tag LIKE '%' || :query || '%' AND price <= :phigh")
+    @Query("SELECT * FROM item WHERE (name LIKE '%' || :query || '%' OR tag LIKE '%' || :query || '%') AND price <= :phigh")
     List<Item> findItemByAll(String query, int phigh);
 
     @Insert

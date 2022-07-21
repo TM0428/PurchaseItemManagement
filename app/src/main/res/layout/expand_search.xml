@@ -12,11 +12,11 @@
 
         <Switch
             android:id="@+id/sw_tag"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="false"
             android:padding="10dp"
-            android:text="タグを検索に含む" />
+            android:text="@string/tv_taginc" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="価格の上限" />
+                android:text="@string/tv_maxprice" />
 
             <Spinner
                 android:id="@+id/spinner"
