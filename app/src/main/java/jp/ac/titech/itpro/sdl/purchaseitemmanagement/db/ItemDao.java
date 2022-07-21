@@ -19,8 +19,12 @@ public interface ItemDao {
     @Query("SELECT * FROM item WHERE id IN (:ids)")
     List<Item> loadAllByIds(int[] ids);
 
-    @Query("SELECT * FROM item WHERE name LIKE '%' || :query || '%'")
-    List<Item> findItemByName(String query);
+    @Query("SELECT * FROM item WHERE name LIKE '%' || :query || '%' AND price <= :phigh")
+    List<Item> findItemByName(String query, int phigh);
+
+
+    @Query("SELECT * FROM item WHERE (name LIKE '%' || :query || '%' OR tag LIKE '%' || :query || '%') AND price <= :phigh")
+    List<Item> findItemByAll(String query, int phigh);
 
     @Insert
     void insertAll(Item... items);
