@@ -30,11 +30,11 @@
             <TextView
                 android:id="@+id/tv_itemname"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 tools:text="冴えない彼女の育てかた 第2巻" />
 
             <LinearLayout
@@ -50,7 +50,7 @@
                     android:layout_weight="0.8"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     tools:text="ライトノベル" />
 
                 <TextView
@@ -60,7 +60,7 @@
                     android:layout_gravity="right"
                     android:gravity="right"
                     android:maxLines="1"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     tools:text="￥500" />
             </LinearLayout>
 
