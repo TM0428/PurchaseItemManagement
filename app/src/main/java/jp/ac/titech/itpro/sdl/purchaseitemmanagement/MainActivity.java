@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private AppDatabase db;
     private ItemRecyclerViewAdapter adapter;
     private boolean isexpand = false;
-    private final String[] spinnerItems = {"選択無し", "1000円", "5000円", "10000円"};
+    private final String[] spinnerItems = {"選択無し","500円", "1000円", "5000円"};
     private String query = "";
     private int maxprice = 1000000000;
     private boolean tab_inc = false;
@@ -112,14 +112,14 @@ public class MainActivity extends AppCompatActivity {
                 // 選択されたアイテムのテキストを取得
                 String str = spinner.getSelectedItem().toString();
                 switch (str){
+                    case "500円":
+                        maxprice = 500;
+                        break;
                     case "1000円":
                         maxprice = 1000;
                         break;
                     case "5000円":
                         maxprice = 5000;
-                        break;
-                    case "10000円":
-                        maxprice = 10000;
                         break;
                     case "選択無し":
                     default:
@@ -134,14 +134,14 @@ public class MainActivity extends AppCompatActivity {
                 // 選択されたアイテムのテキストを取得
                 String str = spinner.getSelectedItem().toString();
                 switch (str){
+                    case "500円":
+                        maxprice = 500;
+                        break;
                     case "1000円":
                         maxprice = 1000;
                         break;
                     case "5000円":
                         maxprice = 5000;
-                        break;
-                    case "10000円":
-                        maxprice = 10000;
                         break;
                     case "選択無し":
                     default:
@@ -309,9 +309,8 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     items_db = dao.findItemByName(query,price);
                 }
-
-                StringBuilder sb = new StringBuilder();
                 /*
+                StringBuilder sb = new StringBuilder();
                 items_db.forEach(item -> {
                     Log.d("MA_DB",item.name);
                     sb.append(item.toString());

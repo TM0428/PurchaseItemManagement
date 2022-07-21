@@ -33,7 +33,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.9"
                         android:padding="20dp"
-                        android:text="詳細設定"
+                        android:text="@string/tv_additionals"
                         android:textSize="16sp"
                         tools:text="詳細設定" />
 
