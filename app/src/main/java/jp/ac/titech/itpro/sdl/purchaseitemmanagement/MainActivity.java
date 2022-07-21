@@ -11,6 +11,7 @@ import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.AppDatabaseSingleton;
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.Item;
 import jp.ac.titech.itpro.sdl.purchaseitemmanagement.db.ItemDao;
 
+import android.app.VoiceInteractor;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +21,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.SearchView;
+import android.widget.Spinner;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
     public List<Item> items = new ArrayList<>();
     private AppDatabase db;
     private ItemRecyclerViewAdapter adapter;
+    private boolean isexpand = false;
+    private final String[] spinnerItems = {"選択無し", "1000円", "5000円", "10000円"};
+    private String query = "";
+    private int maxprice = 1000000000;
+    private boolean tab_inc = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +85,81 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mBinding.rvItemlist.setAdapter(adapter);
+        mBinding.cvAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(isexpand){
+                    mBinding.expandableLayout.collapse();
+                }
+                else{
+                    mBinding.expandableLayout.expand();
+                }
+                isexpand = !isexpand;
+            }
+        });
+        ArrayAdapter<String> adapter
+                = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, spinnerItems);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner spinner = mBinding.loExsearch.findViewById(R.id.spinner);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Spinner を取得
+                Spinner spinner = (Spinner) parent;
+                // 選択されたアイテムのテキストを取得
+                String str = spinner.getSelectedItem().toString();
+                switch (str){
+                    case "1000円":
+                        maxprice = 1000;
+                        break;
+                    case "5000円":
+                        maxprice = 5000;
+                        break;
+                    case "10000円":
+                        maxprice = 10000;
+                        break;
+                    case "選択無し":
+                    default:
+                        maxprice = 1000000000;
+                }
+                Log.d("MA",String.valueOf(maxprice));
+            }
+
+            public void onItemSelected(AdapterView parent, View view, int position, long id) {
+                // Spinner を取得
+                Spinner spinner = (Spinner) parent;
+                // 選択されたアイテムのテキストを取得
+                String str = spinner.getSelectedItem().toString();
+                switch (str){
+                    case "1000円":
+                        maxprice = 1000;
+                        break;
+                    case "5000円":
+                        maxprice = 5000;
+                        break;
+                    case "10000円":
+                        maxprice = 10000;
+                        break;
+                    case "選択無し":
+                    default:
+                        maxprice = 1000000000;
+                }
+                Log.d("MA",String.valueOf(maxprice));
+                new AsyncExportProgressForSearch(db,query,tab_inc,maxprice).execute();
+            }
+        });
+        Switch sw = mBinding.loExsearch.findViewById(R.id.sw_tag);
+        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("MA",String.valueOf(isChecked));
+                tab_inc = isChecked;
+                new AsyncExportProgressForSearch(db,query,tab_inc,maxprice).execute();
+            }
+        });
     }
 
     @Override
@@ -105,15 +191,17 @@ public class MainActivity extends AppCompatActivity {
             SearchView sv = (SearchView) searchItem.getActionView();
             sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
-                public boolean onQueryTextSubmit(String query) {
-                    Log.d("MA_search",query);
-                    new AsyncExportProgressForSearch(db,query).execute();
+                public boolean onQueryTextSubmit(String Text) {
+                    Log.d("MA_search",Text);
+                    query = Text;
+                    new AsyncExportProgressForSearch(db,Text,tab_inc,maxprice).execute();
                     return false;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    new AsyncExportProgressForSearch(db,newText).execute();
+                    query = newText;
+                    new AsyncExportProgressForSearch(db,newText,tab_inc,maxprice).execute();
                     return false;
                 }
             });
@@ -190,10 +278,14 @@ public class MainActivity extends AppCompatActivity {
 
         AppDatabase db;
         String query;
+        boolean tag_inc;
+        int price;
         //TextView output;
-        private AsyncExportProgressForSearch(AppDatabase db,String query){
+        private AsyncExportProgressForSearch(AppDatabase db,String query, boolean tag_inc, int price){
             this.db = db;
             this.query = query;
+            this.tag_inc = tag_inc;
+            this.price = price;
         }
         /*
         private AsyncExportProgress(AppDatabase db,TextView tv){
@@ -210,7 +302,14 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // ここにバックグラウンド処理を書く
                 ItemDao dao = db.itemDao();
-                List<Item> items_db = dao.findItemByName(query);
+                List<Item> items_db;
+                if(tag_inc){
+                    items_db = dao.findItemByAll(query,price);
+                }
+                else{
+                    items_db = dao.findItemByName(query,price);
+                }
+
                 StringBuilder sb = new StringBuilder();
                 /*
                 items_db.forEach(item -> {
